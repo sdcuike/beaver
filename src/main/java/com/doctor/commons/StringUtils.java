@@ -18,9 +18,12 @@ public final class StringUtils {
         if (cs == null || cs.length() == 0) {
             return true;
         }
+        return containsOnlyWhitespaces(cs);
+    }
 
+    public static boolean containsOnlyWhitespaces(CharSequence cs) {
         for (int i = 0, length = cs.length(); i < length; i++) {
-            if (!Character.isWhitespace(cs.charAt(i))) {
+            if (!CharUtils.isWhitespace(cs.charAt(i))) {
                 return false;
             }
         }
