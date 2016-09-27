@@ -3,6 +3,8 @@ package com.doctor.commons;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
+import com.doctor.beaver.annotation.ThreadSafe;
+
 /**
  * @author sdcuike
  *         <p>
@@ -15,7 +17,7 @@ import java.util.Arrays;
  *         https://raw.githubusercontent.com/oblac/jodd/master/jodd-core/src/
  *         main/java/jodd/util/Base64.java
  */
-
+@ThreadSafe
 public class Base64Utils {
     public static String       encoding = "UTF-8";
     public static final char[] CHARS    = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"

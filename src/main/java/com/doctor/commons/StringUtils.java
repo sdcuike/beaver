@@ -1,10 +1,13 @@
 package com.doctor.commons;
 
+import com.doctor.beaver.annotation.ThreadSafe;
+
 /**
  * @author sdcuike
  *         <p>
  *         Created on 2016年9月21日
  */
+@ThreadSafe
 public final class StringUtils {
 
     /**
@@ -32,7 +35,7 @@ public final class StringUtils {
      * @param byteArray
      * @return 16进制字符串
      */
-    public static String toHexString(byte[] byteArray) {
+    public static String toHexString(final byte[] byteArray) {
         if (byteArray == null) {
             return null;
         }

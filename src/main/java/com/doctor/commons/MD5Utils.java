@@ -4,12 +4,15 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import com.doctor.beaver.annotation.ThreadSafe;
+
 /**
  * @author sdcuike
  *         <p>
  *         Created on 2016年9月21日
  * @see https://www.mkyong.com/java/java-md5-hashing-example/
  */
+@ThreadSafe
 public final class MD5Utils {
 
     private static String MD5 = "MD5";

@@ -10,6 +10,8 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import com.doctor.beaver.annotation.ThreadSafe;
+
 /**
  * @author sdcuike
  *         <p>
@@ -17,7 +19,9 @@ import javax.crypto.spec.SecretKeySpec;
  *         <p>
  *         Refer
  *         {@link http://www.quickprogrammingtips.com/java/how-to-encrypt-and-decrypt-data-in-java-using-aes-algorithm.html}
+ *         {@link http://stackoverflow.com/questions/6957406/is-cipher-thread-safe}
  */
+@ThreadSafe
 public final class AESUtils {
 
     /**
@@ -32,7 +36,7 @@ public final class AESUtils {
 
     private static final String IvParameterSpec = "0102030405060708";
 
-    public static final int     KeySize128      = 128;
+    private static final int    KeySize128      = 128;
 
     /**
      * 生成Base64字符串密钥
