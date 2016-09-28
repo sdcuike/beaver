@@ -54,6 +54,18 @@ public final class StringUtils {
         return sb.toString();
     }
 
+    public static String leftPad(String str, int num, String padStr) {
+        if (num <= 0) {
+            return str;
+        }
+        StringBuilder sb = new StringBuilder();
+        while (num-- > 0) {
+            sb.append(padStr);
+        }
+        sb.append(str);
+        return sb.toString();
+    }
+
     private StringUtils() {
         throw new UnsupportedOperationException();
     }
