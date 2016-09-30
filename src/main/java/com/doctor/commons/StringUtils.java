@@ -21,6 +21,10 @@ public final class StringUtils {
         return containsOnlyWhitespaces(cs);
     }
 
+    public static String nullToEmpty(final String str) {
+        return (str == null) ? "" : str;
+    }
+
     public static boolean containsOnlyWhitespaces(CharSequence cs) {
         for (int i = 0, length = cs.length(); i < length; i++) {
             if (!CharUtils.isWhitespace(cs.charAt(i))) {
@@ -58,11 +62,23 @@ public final class StringUtils {
         if (num <= 0) {
             return str;
         }
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder(str.length() + num);
         while (num-- > 0) {
             sb.append(padStr);
         }
         sb.append(str);
+        return sb.toString();
+    }
+
+    public static String rightPad(String str, int num, String padStr) {
+        if (num <= 0) {
+            return str;
+        }
+        StringBuilder sb = new StringBuilder(str.length() + num);
+        sb.append(str);
+        while (num-- > 0) {
+            sb.append(padStr);
+        }
         return sb.toString();
     }
 
