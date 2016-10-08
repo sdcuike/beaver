@@ -38,4 +38,30 @@ public final class ExceptionUtils {
         }
     }
 
+    /**
+     * 判断异常是否是非受检异常。具体查看 java doc {@link Error}与{@link RuntimeException}
+     * 
+     * @param ex
+     * @return {@code boolean}
+     * @see java.lang.Exception
+     * @see java.lang.RuntimeException
+     * @see java.lang.Error
+     */
+    public static boolean isUnCheckedException(Throwable ex) {
+        return (ex instanceof Error || ex instanceof RuntimeException);
+    }
+
+    /**
+     * 判断异常是否时候受检异常
+     * 
+     * @param ex
+     * @return {@code boolean}
+     * @see java.lang.Exception
+     * @see java.lang.RuntimeException
+     * @see java.lang.Error
+     */
+    public static boolean isCheckedException(Throwable ex) {
+        return !isUnCheckedException(ex);
+    }
+
 }
