@@ -8,7 +8,7 @@ package com.doctor.beaver.domain.result;
  *         Created on 2016年9月29日
  *         <p>
  */
-public class ModelResult<T> extends BaseResult {
+public final class ModelResult<T> extends BaseResult {
 
     private static final long serialVersionUID = -1645782922380055867L;
 
@@ -21,23 +21,20 @@ public class ModelResult<T> extends BaseResult {
     public ModelResult() {
     }
 
-    @SuppressWarnings("unchecked")
-    public <SubClass extends ModelResult> SubClass withModel(T model) {
+    public ModelResult<T> withModel(T model) {
         data = model;
-        return (SubClass) this;
+        return this;
     }
 
-    @SuppressWarnings("unchecked")
-    public <SubClass extends ModelResult> SubClass withModelFromCache(T model) {
+    public ModelResult<T> withModelFromCache(T model) {
         data = model;
         readFromCache = true;
-        return (SubClass) this;
+        return this;
     }
 
-    @SuppressWarnings("unchecked")
-    public <SubClass extends ModelResult> SubClass withModelFromDb(T model) {
+    public ModelResult<T> withModelFromDb(T model) {
         data = model;
-        return (SubClass) this;
+        return this;
     }
 
     public T getData() {
@@ -63,4 +60,8 @@ public class ModelResult<T> extends BaseResult {
                 + ", inputParamWhereFalse=" + getInputParamWhereFalse() + "]";
     }
 
+    public static void main(String[] args) {
+        ModelResult<Object> modelResult = new ModelResult<>();
+        modelResult.withReturnCodeAndReturnMsg("", "");
+    }
 }
