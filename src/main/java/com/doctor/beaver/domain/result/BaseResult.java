@@ -18,6 +18,12 @@ public class BaseResult implements Serializable {
     private String            returnMsg        = "成功!";
 
     /**
+     * 非rest RPC服务，为了避免序列化（接口定义不升级）而设置的扩展内容，此内容最好与枚举定义关系起来，接口说明定义info关联的枚举;
+     * info最好不要是复杂对象的json格式，如果是，说明你接口定义有问题，或接口功能实现过多
+     */
+    private String            info;
+
+    /**
      * 出错时的重要输入参数,可供调用方查看
      */
     private String            inputParamWhereFalse;
@@ -65,10 +71,17 @@ public class BaseResult implements Serializable {
         this.inputParamWhereFalse = inputParamWhereFalse;
     }
 
+    public String getInfo() {
+        return info;
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
+    }
+
     @Override
     public String toString() {
-        return "BaseResult [returnCode=" + returnCode + ", returnMsg=" + returnMsg + ", inputParamWhereFalse="
-                + inputParamWhereFalse + "]";
+        return "BaseResult [returnCode=" + returnCode + ", returnMsg=" + returnMsg + ", info=" + info + ", inputParamWhereFalse=" + inputParamWhereFalse + "]";
     }
 
 }

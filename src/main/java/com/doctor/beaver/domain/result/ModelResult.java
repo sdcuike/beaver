@@ -55,13 +55,6 @@ public final class ModelResult<T> extends BaseResult {
 
     @Override
     public String toString() {
-        return "ModelResult [data=" + data + ", readFromCache=" + readFromCache
-                + ", returnCode=" + getReturnCode() + ", returnMsg=" + getReturnMsg()
-                + ", inputParamWhereFalse=" + getInputParamWhereFalse() + "]";
-    }
-
-    public static void main(String[] args) {
-        ModelResult<Object> modelResult = new ModelResult<>();
-        modelResult.withReturnCodeAndReturnMsg("", "");
+        return "ModelResult [data=" + data + ", readFromCache=" + readFromCache + ", isSuccess()=" + isSuccess() + ", getReturnCode()=" + getReturnCode() + ", getReturnMsg()=" + getReturnMsg() + ", getInputParamWhereFalse()=" + getInputParamWhereFalse() + ", getInfo()=" + getInfo() + "]";
     }
 }
