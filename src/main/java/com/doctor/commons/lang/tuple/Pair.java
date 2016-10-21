@@ -14,6 +14,17 @@ public final class Pair<L, R> {
     private L left;
     private R right;
 
+    /**
+     * 增加工厂函数
+     * 
+     * @param left
+     * @param right
+     * @return {@code Pair<L, R>}
+     */
+    public static <L, R> Pair<L, R> newPair(L left, R right) {
+        return new Pair<L, R>(left, right);
+    }
+
     public Pair() {
     }
 
