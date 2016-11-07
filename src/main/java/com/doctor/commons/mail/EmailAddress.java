@@ -1,6 +1,7 @@
 package com.doctor.commons.mail;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -39,9 +40,7 @@ public class EmailAddress {
     }
 
     public EmailAddress(String emailAddress) {
-        EmailAddress address = parse(emailAddress);
-        this.nickName = address.nickName;
-        this.email = address.email;
+        this(parse(emailAddress));
     }
 
     public String getEmail() {
@@ -107,10 +106,10 @@ public class EmailAddress {
                 return new InternetAddress(email);
             }
 
-            return new InternetAddress(email, nickName);
+            return new InternetAddress(email, nickName, StandardCharsets.UTF_8.name());
 
         } catch (AddressException | UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+            throw new EmailAddressException(e);
         }
     }
 }
