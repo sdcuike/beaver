@@ -20,8 +20,7 @@ public abstract class EmailAttachment {
     protected final String contentId;
 
     protected EmailAttachment(String name) {
-        this.name = name;
-        this.contentId = UUID.randomUUID().toString();
+        this(name, UUID.randomUUID().toString());
     }
 
     protected EmailAttachment(String name, String contentId) {

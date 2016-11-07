@@ -6,7 +6,9 @@ import javax.activation.DataSource;
 import javax.activation.FileDataSource;
 
 /**
- * 邮箱附件：文件附件
+ * 邮箱附件：文件附件-普通附件.<br>
+ * 内联附件见<br>
+ * {@link Open Declaration com.doctor.commons.mail.InlineAttachmentEmailMessage}
  * 
  * @author sdcuike
  *         <p>
@@ -14,6 +16,7 @@ import javax.activation.FileDataSource;
  *         <p>
  */
 public class FileAttachment extends EmailAttachment {
+
     private final File file;
 
     public FileAttachment(File file) {
@@ -21,13 +24,8 @@ public class FileAttachment extends EmailAttachment {
         this.file = file;
     }
 
-    public FileAttachment(File file, String name) {
-        super(name);
-        this.file = file;
-    }
-
-    public FileAttachment(File file, String name, String contentId) {
-        super(name, contentId);
+    public FileAttachment(File file, String contentId) {
+        super(file.getName(), contentId);
         this.file = file;
     }
 

@@ -162,7 +162,7 @@ public class MimeMessage extends AbstractMimeMessage {
     }
 
     public MimeMessage emailAttachmentForFile(File file, String name) {
-        addEmailAttachment(new FileAttachment(file, name, UUID.randomUUID().toString()));
+        addEmailAttachment(new FileAttachment(file, UUID.randomUUID().toString()));
         return this;
     }
 }
