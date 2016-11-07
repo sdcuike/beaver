@@ -1,6 +1,7 @@
 package com.doctor.commons.mail;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,7 +27,7 @@ import com.doctor.commons.ExceptionUtils;
 import com.doctor.commons.lang.tuple.Pair;
 import com.sun.mail.smtp.SMTPTransport;
 
-public final class NoAuthenticatorSmtpServer {
+public final class NoAuthenticatorSmtpServer implements SmtpServer {
 
     private static final String smtp_protocol_prefix        = "smtp://";
 
@@ -93,8 +94,14 @@ public final class NoAuthenticatorSmtpServer {
 
     }
 
-    public Pair<Boolean, String> sendMail(final MimeMessage mimeMessage) throws MessagingException, IOException {
-        final javax.mail.internet.MimeMessage mailMessage = MimeMessageExtend.of(mimeMessage);
+    @Override
+    public Pair<Boolean, String> sendMail(final MimeMessage mimeMessage) throws IOException {
+        javax.mail.internet.MimeMessage mailMessage;
+        try {
+            mailMessage = MimeMessageExtend.of(mimeMessage);
+        } catch (UnsupportedEncodingException | MessagingException cause) {
+            throw new EmailException(cause);
+        }
 
         List<EmailAddress> emailAddresses = new ArrayList<>();
         emailAddresses.addAll(mimeMessage.getTo());
@@ -105,7 +112,13 @@ public final class NoAuthenticatorSmtpServer {
         for (EmailAddress e : emailAddresses) {
             String email = e.getEmail();
             String hostName = email.substring(email.lastIndexOf("@") + 1);
-            Set<URLName> mxRecordsForHost = getMXRecordsForHost(hostName);
+            Set<URLName> mxRecordsForHost = new HashSet<>();
+            try {
+                mxRecordsForHost = getMXRecordsForHost(hostName);
+            } catch (TextParseException cause) {
+                throw new EmailException(cause);
+            }
+
             if (mxRecordsForHost.isEmpty()) {
                 throw new IllegalArgumentException("mxRecords for " + email + " is empty");
             }
@@ -135,7 +148,11 @@ public final class NoAuthenticatorSmtpServer {
                     result.setRight(ExceptionUtils.printStackTraceToString(e1));
                 } finally {
                     if (transport != null) {
-                        transport.close();
+                        try {
+                            transport.close();
+                        } catch (MessagingException e1) {
+                            //
+                        }
                         transport = null;
                     }
                 }
