@@ -1,13 +1,13 @@
 package com.doctor.commons.mail;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 
@@ -28,25 +28,21 @@ import com.sun.mail.smtp.SMTPTransport;
 
 public final class NoAuthenticatorSmtpServer {
 
-    private static final String SMTP_PROTOCOL_PREFIX        = "smtp://";
+    private static final String smtp_protocol_prefix        = "smtp://";
 
     private static final String mail_mime_charset           = "mail.mime.charset";
     private static final String mail_smtp_connectiontimeout = "mail.smtp.connectiontimeout";
     private static final String mail_smtp_timeout           = "mail.smtp.timeout";
     private static final String mail_smtp_host              = "mail.smtp.host";
-    public static final String  mail_host                   = "mail.host";
+    private static final String mail_host                   = "mail.host";
     private static final String mail_smtp_localhost         = "mail.smtp.localhost";
     private static final String mail_smtp_debug             = "mail.debug";
-
-    private boolean             debug                       = false;
 
     private Properties          config                      = new Properties();
     {
         config = System.getProperties();
         config.setProperty(mail_mime_charset, "UTF-8");
-        if (debug) {
-            config.setProperty(mail_smtp_debug, "true");
-        }
+        config.setProperty(mail_smtp_debug, "false");
         config.setProperty(mail_smtp_timeout, "30000");
         config.setProperty(mail_smtp_connectiontimeout, "30000");
         config.setProperty(mail_smtp_localhost, "doctorwho.com");
@@ -54,10 +50,47 @@ public final class NoAuthenticatorSmtpServer {
         config.setProperty(mail_host, "doctorwho.com");
     }
 
-    public NoAuthenticatorSmtpServer(Properties config) {
-        for (Entry<Object, Object> es : config.entrySet()) {
-            this.config.put(es.getKey(), es.getValue());
-        }
+    public static NoAuthenticatorSmtpServer create() {
+        return new NoAuthenticatorSmtpServer();
+    }
+
+    public NoAuthenticatorSmtpServer mimeCharset(Charset mimeCharset) {
+        config.setProperty(mail_mime_charset, mimeCharset.name());
+        return this;
+    }
+
+    public NoAuthenticatorSmtpServer smtpConnectionTimeout(int smtpConnectionTimeout) {
+        config.setProperty(mail_smtp_connectiontimeout, String.valueOf(smtpConnectionTimeout));
+        return this;
+    }
+
+    public NoAuthenticatorSmtpServer smtpLocalhost(int smtpLocalhost) {
+        config.setProperty(mail_smtp_localhost, String.valueOf(smtpLocalhost));
+        return this;
+    }
+
+    public NoAuthenticatorSmtpServer smtpTimeout(int smtpTimeout) {
+        config.setProperty(mail_smtp_timeout, String.valueOf(smtpTimeout));
+        return this;
+    }
+
+    public NoAuthenticatorSmtpServer smtpHost(int smtpHost) {
+        config.setProperty(mail_smtp_host, String.valueOf(smtpHost));
+        return this;
+    }
+
+    public NoAuthenticatorSmtpServer mailHost(int mailHost) {
+        config.setProperty(mail_host, String.valueOf(mailHost));
+        return this;
+    }
+
+    public NoAuthenticatorSmtpServer debug(boolean debug) {
+        config.setProperty(mail_smtp_debug, String.valueOf(debug));
+        return this;
+    }
+
+    private NoAuthenticatorSmtpServer() {
+
     }
 
     public Pair<Boolean, String> sendMail(final MimeMessage mimeMessage) throws MessagingException, IOException {
@@ -155,7 +188,7 @@ public final class NoAuthenticatorSmtpServer {
                 MXRecord mx = (MXRecord) records[i];
                 String targetString = mx.getTarget().toString();
                 URLName uName = new URLName(
-                        SMTP_PROTOCOL_PREFIX +
+                        smtp_protocol_prefix +
                                 targetString.substring(0, targetString.length() - 1));
                 recordsColl.add(uName);
             }
@@ -175,7 +208,7 @@ public final class NoAuthenticatorSmtpServer {
         if (!foundOriginalMX) {
             Record[] recordsTypeA = new Lookup(hostName, Type.A).run();
             if (recordsTypeA != null && recordsTypeA.length > 0) {
-                recordsColl.add(new URLName(SMTP_PROTOCOL_PREFIX + hostName));
+                recordsColl.add(new URLName(smtp_protocol_prefix + hostName));
             }
         }
 

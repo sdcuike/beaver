@@ -113,7 +113,6 @@ class MimeMessageExtend extends MimeMessage {
                 MimeBodyPart image = new MimeBodyPart();
                 image.setContentID(ie.getEmailAttachment().getContentId());
                 image.setDataHandler(new DataHandler(ie.getEmailAttachment().getDataSource()));
-
                 mixedSubPart.addBodyPart(text);
                 mixedSubPart.addBodyPart(image);
                 bodyPart.setContent(mixedSubPart);

@@ -131,13 +131,13 @@ public class MimeMessage extends AbstractMimeMessage {
         return this;
     }
 
-    public MimeMessage emailMessageForHtmlInlineAttachment(Charset charset, EmailAttachment emailAttachment) {
-        addEmailMessage(new InlineAttachmentEmailMessage(charset, emailAttachment));
+    public MimeMessage emailMessageForHtmlInlineAttachment(String content, Charset charset, EmailAttachment emailAttachment) {
+        addEmailMessage(new InlineAttachmentEmailMessage(content, charset, emailAttachment));
         return this;
     }
 
-    public MimeMessage emailMessageForHtmlInlineAttachment(EmailAttachment emailAttachment) {
-        addEmailMessage(new InlineAttachmentEmailMessage(emailAttachment));
+    public MimeMessage emailMessageForHtmlInlineAttachment(String content, EmailAttachment emailAttachment) {
+        addEmailMessage(new InlineAttachmentEmailMessage(content, emailAttachment));
         return this;
     }
 
