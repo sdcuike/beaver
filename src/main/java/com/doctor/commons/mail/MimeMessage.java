@@ -151,7 +151,7 @@ public class MimeMessage extends AbstractMimeMessage {
         return this;
     }
 
-    public MimeMessage priority(int priority) {
+    public MimeMessage priority(EmailPriority priority) {
         setPriority(priority);
         return this;
     }

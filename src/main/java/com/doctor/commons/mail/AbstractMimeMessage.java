@@ -38,7 +38,7 @@ public abstract class AbstractMimeMessage {
     /**
      * typically between 1 (highest) and 5 (lowest)
      */
-    protected int                   priority        = 5;
+    protected EmailPriority         priority        = EmailPriority.Normal;
 
     public String getSubject() {
         return subject;
@@ -152,12 +152,12 @@ public abstract class AbstractMimeMessage {
         return sentDate;
     }
 
-    public void setPriority(int priority) {
-        this.priority = priority;
+    public EmailPriority getPriority() {
+        return priority;
     }
 
-    public int getPriority() {
-        return priority;
+    public void setPriority(EmailPriority priority) {
+        this.priority = priority;
     }
 
     public List<EmailAttachment> getEmailAttachment() {

@@ -95,7 +95,7 @@ class MimeMessageExtend extends MimeMessage {
         }
 
         //priority
-        mimeMessage.setHeader(Header_Priority, Integer.toString(message.getPriority()));
+        mimeMessage.setHeader(Header_Priority, Integer.toString(message.getPriority().getPriority()));
 
         List<EmailMessage> emailMessages = message.getEmailMessage();
         List<EmailAttachment> emailAttachments = message.getEmailAttachment();
