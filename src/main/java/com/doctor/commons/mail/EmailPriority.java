@@ -34,4 +34,9 @@ public enum EmailPriority {
     public int getPriority() {
         return priority;
     }
+
+    @Override
+    public String toString() {
+        return "EmailPriority [priority=" + priority + ",description=" + description + "]";
+    }
 }

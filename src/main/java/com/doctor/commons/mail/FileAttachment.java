@@ -34,4 +34,8 @@ public class FileAttachment extends EmailAttachment {
         return new FileDataSource(file);
     }
 
+    @Override
+    public String toString() {
+        return "FileAttachment [file=" + file + ", name=" + name + ", contentId=" + contentId + "]";
+    }
 }

@@ -27,4 +27,9 @@ public class InlineAttachmentEmailMessage extends EmailMessage {
     public EmailAttachment getEmailAttachment() {
         return emailAttachment;
     }
+
+    @Override
+    public String toString() {
+        return "InlineAttachmentEmailMessage [emailAttachment=" + emailAttachment + ", content()=" + getContent() + ", mimeType()=" + getMimeType() + ", charset()=" + getCharset() + "]";
+    }
 }

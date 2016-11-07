@@ -172,4 +172,9 @@ public abstract class AbstractMimeMessage {
         this.emailAttachment.addAll(Arrays.asList(attachment));
     }
 
+    @Override
+    public String toString() {
+        return "AbstractMimeMessage [subject=" + subject + ", subjectCharset=" + subjectCharset + ", from=" + from + ", to=" + to + ", replyTo=" + replyTo + ", cc=" + cc + ", bcc=" + bcc + ", emailMessage=" + emailMessage + ", emailAttachment=" + emailAttachment + ", headers=" + headers
+                + ", sentDate=" + sentDate + ", priority=" + priority + "]";
+    }
 }

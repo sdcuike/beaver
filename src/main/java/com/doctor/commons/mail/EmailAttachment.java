@@ -37,4 +37,9 @@ public abstract class EmailAttachment {
     }
 
     public abstract DataSource getDataSource();
+
+    @Override
+    public String toString() {
+        return "EmailAttachment [name=" + name + ", contentId=" + contentId + "]";
+    }
 }
