@@ -1,9 +1,14 @@
 package com.doctor.commons;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.ReflectPermission;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -129,25 +134,95 @@ public final class ReflectionUtils {
     }
 
     public static void makeAccessible(Field field) {
-        if ((!Modifier.isPublic(field.getModifiers()) ||
-                !Modifier.isPublic(field.getDeclaringClass().getModifiers()) ||
-                Modifier.isFinal(field.getModifiers())) && !field.isAccessible()) {
-            field.setAccessible(true);
+
+        if (canAccessPrivateMethods()) {
+            if ((!Modifier.isPublic(field.getModifiers()) ||
+                    !Modifier.isPublic(field.getDeclaringClass().getModifiers()) ||
+                    Modifier.isFinal(field.getModifiers())) && !field.isAccessible()) {
+                field.setAccessible(true);
+            }
         }
     }
 
     public static void makeAccessible(Method method) {
-        if ((!Modifier.isPublic(method.getModifiers()) ||
-                !Modifier.isPublic(method.getDeclaringClass().getModifiers())) && !method.isAccessible()) {
-            method.setAccessible(true);
+
+        if (canAccessPrivateMethods()) {
+            if ((!Modifier.isPublic(method.getModifiers()) ||
+                    !Modifier.isPublic(method.getDeclaringClass().getModifiers())) && !method.isAccessible()) {
+                method.setAccessible(true);
+            }
         }
     }
 
     public static void makeAccessible(Constructor<?> constructor) {
-        if ((!Modifier.isPublic(constructor.getModifiers()) ||
-                !Modifier.isPublic(constructor.getDeclaringClass().getModifiers())) && !constructor.isAccessible()) {
-            constructor.setAccessible(true);
+        if (canAccessPrivateMethods()) {
+            if ((!Modifier.isPublic(constructor.getModifiers()) ||
+                    !Modifier.isPublic(constructor.getDeclaringClass().getModifiers())) && !constructor.isAccessible()) {
+                constructor.setAccessible(true);
+            }
         }
+    }
+
+    /**
+     * 检查反射配置是
+     * 
+     * @return
+     */
+    public static boolean canAccessPrivateMethods() {
+        try {
+            SecurityManager securityManager = System.getSecurityManager();
+            if (securityManager != null) {
+                securityManager.checkPermission(new ReflectPermission("suppressAccessChecks"));
+            }
+        } catch (SecurityException e) {
+            //SecurityException 异常表明: - if access is not permitted based on the current security policy.
+            return false;
+        }
+
+        return true;
+    }
+
+    public static String getMethodSignature(Method method) {
+        StringBuilder sb = new StringBuilder();
+        if (method.getReturnType() != null) {
+            sb.append(method.getReturnType().getName()).append("#");
+        }
+
+        sb.append(method.getName());
+
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        if (parameterTypes != null) {
+            for (int i = 0, length = parameterTypes.length; i < length; i++) {
+                if (i == 0) {
+                    sb.append(":");
+                } else {
+                    sb.append(",");
+                }
+                sb.append(parameterTypes[i].getName());
+            }
+        }
+        return sb.toString();
+    }
+
+    public static Class<?> typeToClass(Type src) {
+        Class<?> result = null;
+        if (src instanceof Class) {
+            result = (Class<?>) src;
+        } else if (src instanceof ParameterizedType) {
+            result = (Class<?>) ((ParameterizedType) src).getRawType();
+        } else if (src instanceof GenericArrayType) {
+            Type componentType = ((GenericArrayType) src).getGenericComponentType();
+            if (componentType instanceof Class) {
+                result = Array.newInstance((Class<?>) componentType, 0).getClass();
+            } else {
+                Class<?> componentClass = typeToClass(componentType);
+                result = Array.newInstance((Class<?>) componentClass, 0).getClass();
+            }
+        }
+        if (result == null) {
+            result = Object.class;
+        }
+        return result;
     }
 
     public static void clearCache() {

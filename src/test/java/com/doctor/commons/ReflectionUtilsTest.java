@@ -1,5 +1,6 @@
 package com.doctor.commons;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,6 +49,17 @@ public class ReflectionUtilsTest {
         TestClass testClass = ReflectionUtils.newInstance(TestClass.class, new Class<?>[] { int.class }, new Object[] {
                 3 });
         Assert.assertThat(testClass.getIndex(), IsEqual.equalTo(3));
+    }
+
+    @Test
+    public void test_getMethodSignature() throws NoSuchMethodException, SecurityException {
+        Method method = TestClass.class.getMethod("getIndex");
+        String methodSignature = ReflectionUtils.getMethodSignature(method);
+        Assert.assertThat(methodSignature, IsEqual.equalTo("int#getIndex"));
+
+        method = TestClass.class.getMethod("setIndex", int.class);
+        methodSignature = ReflectionUtils.getMethodSignature(method);
+        Assert.assertThat(methodSignature, IsEqual.equalTo("void#setIndex:int"));
     }
 
     private static class TestClass {
