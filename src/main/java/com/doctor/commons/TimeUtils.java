@@ -1,5 +1,8 @@
 package com.doctor.commons;
 
+import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
+
 import com.doctor.beaver.annotation.ThreadSafe;
 
 /**
@@ -29,5 +32,37 @@ public final class TimeUtils {
             result = true;
         }
         return result;
+    }
+
+    /**
+     * 获取今天剩余时间
+     * 
+     * @param timeUnit 时间单位
+     * @return
+     */
+    public static long getRemainingTimeToday(TimeUnit timeUnit) {
+        Calendar todayEnd = Calendar.getInstance();
+        todayEnd.set(Calendar.HOUR_OF_DAY, 23);
+        todayEnd.set(Calendar.MINUTE, 59);
+        todayEnd.set(Calendar.SECOND, 59);
+        long durationMills = todayEnd.getTimeInMillis() - System.currentTimeMillis();
+        switch (timeUnit) {
+            case MILLISECONDS:
+                return TimeUnit.MILLISECONDS.toMillis(durationMills);
+            case NANOSECONDS:
+                return TimeUnit.MILLISECONDS.toNanos(durationMills);
+            case MICROSECONDS:
+                return TimeUnit.MILLISECONDS.toMicros(durationMills);
+            case SECONDS:
+                return TimeUnit.MILLISECONDS.toSeconds(durationMills);
+            case MINUTES:
+                return TimeUnit.MILLISECONDS.toMinutes(durationMills);
+            case HOURS:
+                return TimeUnit.MILLISECONDS.toHours(durationMills);
+            case DAYS:
+                return TimeUnit.MILLISECONDS.toDays(durationMills);
+            default:
+                throw new IllegalArgumentException();
+        }
     }
 }

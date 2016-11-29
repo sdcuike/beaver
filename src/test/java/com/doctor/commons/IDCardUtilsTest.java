@@ -39,7 +39,7 @@ public class IDCardUtilsTest {
         Collections.sort(list, new Comparator<Entry<String, String>>() {
             public int compare(Entry<String, String> a, Entry<String, String> b) {
                 return a.getKey().compareTo(b.getKey());
-            };
+            }
         });
         for (Entry<String, String> entry : list) {
             if (entry.getKey().length() == 2) {
