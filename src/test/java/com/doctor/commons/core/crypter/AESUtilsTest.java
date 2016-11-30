@@ -1,8 +1,10 @@
-package com.doctor.commons;
+package com.doctor.commons.core.crypter;
 
 import org.hamcrest.core.IsEqual;
 import org.junit.Assert;
 import org.junit.Test;
+
+import com.doctor.commons.core.crypter.AESUtils;
 
 public class AESUtilsTest {
 

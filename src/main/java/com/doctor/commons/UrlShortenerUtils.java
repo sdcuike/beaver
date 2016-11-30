@@ -3,6 +3,7 @@ package com.doctor.commons;
 import java.security.NoSuchAlgorithmException;
 
 import com.doctor.beaver.annotation.ThreadSafe;
+import com.doctor.commons.core.crypter.MD5Utils;
 
 /**
  * 短网址生成算法

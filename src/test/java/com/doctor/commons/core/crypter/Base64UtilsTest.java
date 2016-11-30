@@ -1,4 +1,4 @@
-package com.doctor.commons;
+package com.doctor.commons.core.crypter;
 
 import java.nio.charset.StandardCharsets;
 
@@ -6,6 +6,8 @@ import org.apache.commons.codec.binary.Base64;
 import org.hamcrest.core.IsEqual;
 import org.junit.Assert;
 import org.junit.Test;
+
+import com.doctor.commons.core.crypter.Base64Utils;
 
 public class Base64UtilsTest {
     String str = "http://mvnrepository.com/artifact/commons-codec/commons-codec/1.10";
