@@ -1,10 +1,11 @@
-package com.doctor.commons;
+package com.doctor.commons.core.crypter;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import com.doctor.beaver.annotation.ThreadSafe;
+import com.doctor.commons.StringUtils;
 
 /**
  * @author sdcuike

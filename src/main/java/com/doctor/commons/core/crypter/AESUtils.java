@@ -1,4 +1,4 @@
-package com.doctor.commons;
+package com.doctor.commons.core.crypter;
 
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;

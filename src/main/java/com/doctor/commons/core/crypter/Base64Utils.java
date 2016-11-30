@@ -1,4 +1,4 @@
-package com.doctor.commons;
+package com.doctor.commons.core.crypter;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
