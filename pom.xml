@@ -130,12 +130,7 @@
             <version>4.3.3.RELEASE</version>
         </dependency>
 
-
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.18</version>
-        </dependency>
+        <!-- 依赖的外部 包 ==start -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
@@ -154,7 +149,7 @@
             <version>1.5.6</version>
         </dependency>
 
-
+        <!-- 依赖的外部 包 ==end -->
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
