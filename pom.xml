@@ -31,13 +31,6 @@
     </properties>
 
     <dependencies>
-
-        <dependency>
-            <groupId>org.jodd</groupId>
-            <artifactId>jodd-mail</artifactId>
-            <version>3.8.0</version>
-        </dependency>
-
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
