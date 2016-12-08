@@ -1,8 +1,8 @@
 package com.doctor.commons.core.collection;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.doctor.beaver.annotation.ThreadSafe;
 
@@ -18,60 +18,39 @@ public final class CollectionUtils {
     /**
      * 并集
      * 
-     * @param coll1
-     * @param coll2
+     * @param set1
+     * @param set2
      * @return
      */
-    public static <E> List<E> union(final Collection<E> coll1, final Collection<E> coll2) {
-        List<E> list = new ArrayList<>(coll1);
-        list.addAll(coll2);
-        return list;
-    }
-
-    public static <E> List<E> unionWithoutDuplication(final Collection<E> coll1, final Collection<E> coll2) {
-        List<E> list1 = new ArrayList<>(coll1);
-        List<E> list2 = new ArrayList<>(coll2);
-
-        list2.removeAll(list1);
-        list1.addAll(list2);
-        return list1;
+    public static <E> Set<E> union(final Set<E> set1, final Set<E> set2) {
+        Set<E> set = new HashSet<>(set1);
+        set.addAll(set2);
+        return Collections.unmodifiableSet(set);
     }
 
     /**
      * 交集
      * 
-     * @param coll1
-     * @param coll2
+     * @param set1
+     * @param set2
      * @return
      */
-    public static <E> List<E> intersection(final Collection<E> coll1, final Collection<E> coll2) {
-        List<E> list = new ArrayList<>(coll1);
-        list.retainAll(coll2);
-        return list;
+    public static <E> Set<E> intersection(final Set<E> set1, final Set<E> set2) {
+        Set<E> set = new HashSet<>(set1);
+        set.retainAll(set2);
+        return Collections.unmodifiableSet(set);
     }
 
     /**
      * 差集
      * 
-     * @param coll1
-     * @param coll2
+     * @param set1
+     * @param set2
      * @return
      */
-    public static <E> List<E> subtract(final Collection<E> coll1, final Collection<E> coll2) {
-        List<E> list = new ArrayList<>(coll1);
-        list.removeAll(coll2);
-        return list;
-    }
-
-    public static void main(String[] args) {
-        Collection<Integer> coll2 = new ArrayList<>();
-        coll2.add(1);
-        coll2.add(1);
-        coll2.add(2);
-        Collection<Integer> coll1 = new ArrayList<>();
-        coll1.add(2);
-        coll1.add(2);
-        System.out.println(union(coll1, coll2));
-        System.out.println(unionWithoutDuplication(coll1, coll2));
+    public static <E> Set<E> difference(final Set<E> set1, final Set<E> set2) {
+        Set<E> set = new HashSet<>(set1);
+        set.removeAll(set2);
+        return Collections.unmodifiableSet(set);
     }
 }
