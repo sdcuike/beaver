@@ -1,6 +1,7 @@
 package com.doctor.commons.io;
 
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -9,9 +10,12 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.nio.charset.Charset;
 
 import com.doctor.beaver.annotation.NotNull;
+import com.doctor.beaver.annotation.NullAble;
 
 /**
  * @author sdcuike
@@ -108,4 +112,44 @@ public final class StreamUtils {
         return count;
     }
 
+    public static void closeQuietly(@NullAble final Closeable closeable) {
+        try {
+            if (closeable != null) {
+                closeable.close();
+            }
+
+        } catch (IOException e) {
+
+        }
+    }
+
+    public static void closeQuietly(@NullAble final Closeable... closeables) {
+        if (closeables == null) {
+            return;
+        }
+
+        for (Closeable closeable : closeables) {
+            closeQuietly(closeable);
+        }
+    }
+
+    public static void closeQuietly(@NullAble final ServerSocket socket) {
+        if (socket != null) {
+            try {
+                socket.close();
+            } catch (IOException e) {
+
+            }
+        }
+    }
+
+    public static void closeQuietly(@NullAble final Socket socket) {
+        if (socket != null) {
+            try {
+                socket.close();
+            } catch (IOException e) {
+
+            }
+        }
+    }
 }
