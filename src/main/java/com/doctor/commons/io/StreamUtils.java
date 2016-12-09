@@ -15,7 +15,7 @@ import java.net.Socket;
 import java.nio.charset.Charset;
 
 import com.doctor.beaver.annotation.NotNull;
-import com.doctor.beaver.annotation.NullAble;
+import com.doctor.beaver.annotation.Nullable;
 
 /**
  * @author sdcuike
@@ -112,7 +112,7 @@ public final class StreamUtils {
         return count;
     }
 
-    public static void closeQuietly(@NullAble final Closeable closeable) {
+    public static void closeQuietly(@Nullable final Closeable closeable) {
         try {
             if (closeable != null) {
                 closeable.close();
@@ -123,7 +123,7 @@ public final class StreamUtils {
         }
     }
 
-    public static void closeQuietly(@NullAble final Closeable... closeables) {
+    public static void closeQuietly(@Nullable final Closeable... closeables) {
         if (closeables == null) {
             return;
         }
@@ -133,7 +133,7 @@ public final class StreamUtils {
         }
     }
 
-    public static void closeQuietly(@NullAble final ServerSocket socket) {
+    public static void closeQuietly(@Nullable final ServerSocket socket) {
         if (socket != null) {
             try {
                 socket.close();
@@ -143,7 +143,7 @@ public final class StreamUtils {
         }
     }
 
-    public static void closeQuietly(@NullAble final Socket socket) {
+    public static void closeQuietly(@Nullable final Socket socket) {
         if (socket != null) {
             try {
                 socket.close();
