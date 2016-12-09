@@ -6,6 +6,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.nio.charset.Charset;
 
 import com.doctor.beaver.annotation.NotNull;
@@ -62,6 +65,29 @@ public final class StreamUtils {
         }
         outputStream.flush();
         return count;
+    }
+
+    public static int copyNotClose(@NotNull final Reader in, @NotNull final Writer out) throws IOException {
+        char[] buffer = new char[DEFAULT_BUFFER_SIZE];
+        int count = 0;
+        int readByte = -1;
+
+        while ((readByte = in.read(buffer)) != -1) {
+            out.write(buffer, 0, readByte);
+            count += readByte;
+        }
+        out.flush();
+        return count;
+    }
+
+    public static void copyNotClose(@NotNull final String in, @NotNull final Writer out) throws IOException {
+        out.write(in);
+    }
+
+    public static String copyToString(@NotNull final Reader in) throws IOException {
+        StringWriter out = new StringWriter();
+        copyNotClose(in, out);
+        return out.toString();
     }
 
     /**
