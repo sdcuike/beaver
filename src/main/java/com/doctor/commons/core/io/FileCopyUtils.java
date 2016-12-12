@@ -1,4 +1,4 @@
-package com.doctor.commons.io;
+package com.doctor.commons.core.io;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

@@ -1,4 +1,4 @@
-package com.doctor.commons.io;
+package com.doctor.commons.core.io;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
@@ -12,6 +12,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.channels.Channel;
 import java.nio.charset.Charset;
 
 import com.doctor.beaver.annotation.NotNull;
@@ -29,16 +30,24 @@ public final class StreamUtils {
     public static final byte[] EMPTY_BYTE_ARRAY    = new byte[] {};
 
     public static byte[] copyToByteArray(@NotNull final InputStream inputStream) throws IOException {
+        return copyToByteArray(inputStream, DEFAULT_BUFFER_SIZE);
+    }
+
+    public static byte[] copyToByteArray(@NotNull final InputStream inputStream, @NotNull final int bufferSize) throws IOException {
         //ByteArrayOutputStream无需关闭流
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(DEFAULT_BUFFER_SIZE);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(bufferSize);
         copy(inputStream, byteArrayOutputStream);
         return byteArrayOutputStream.toByteArray();
     }
 
     public static String copyToString(@NotNull final InputStream inputStream, @NotNull final Charset charset) throws IOException {
+        return copyToString(inputStream, charset, DEFAULT_BUFFER_SIZE);
+    }
+
+    public static String copyToString(@NotNull final InputStream inputStream, @NotNull final Charset charset, @NotNull final int bufferSize) throws IOException {
         int readNum = -1;
         StringBuilder sb = new StringBuilder();
-        char[] buffer = new char[DEFAULT_BUFFER_SIZE];
+        char[] buffer = new char[bufferSize];
 
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream, charset);
 
@@ -60,7 +69,11 @@ public final class StreamUtils {
     }
 
     public static int copy(@NotNull final InputStream inputStream, @NotNull final OutputStream outputStream) throws IOException {
-        byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
+        return copy(inputStream, outputStream, DEFAULT_BUFFER_SIZE);
+    }
+
+    public static int copy(@NotNull final InputStream inputStream, @NotNull final OutputStream outputStream, @NotNull final int bufferSize) throws IOException {
+        byte[] buffer = new byte[bufferSize];
         int count = 0;
         int readNum = -1;
         while ((readNum = inputStream.read(buffer)) != -1) {
@@ -72,7 +85,11 @@ public final class StreamUtils {
     }
 
     public static int copyNotClose(@NotNull final Reader in, @NotNull final Writer out) throws IOException {
-        char[] buffer = new char[DEFAULT_BUFFER_SIZE];
+        return copyNotClose(in, out, DEFAULT_BUFFER_SIZE);
+    }
+
+    public static int copyNotClose(@NotNull final Reader in, @NotNull final Writer out, @NotNull final int bufferSize) throws IOException {
+        char[] buffer = new char[bufferSize];
         int count = 0;
         int readByte = -1;
 
@@ -110,6 +127,36 @@ public final class StreamUtils {
             count += readByte;
         }
         return count;
+    }
+
+    //以下closeQuietly方法，请优先使用try-with-resources 语法；最好用在finally块，try中显示关闭资源。
+
+    public static void closeQuietly(@Nullable final Channel channel) {
+        if (channel == null) {
+            return;
+        }
+
+        try {
+            channel.close();
+        } catch (IOException e) {
+
+        }
+    }
+
+    public static void closeQuietly(@Nullable final InputStream in) {
+        closeQuietly(in);
+    }
+
+    public static void closeQuietly(@Nullable final OutputStream out) {
+        closeQuietly(out);
+    }
+
+    public static void closeQuietly(@Nullable final Reader reader) {
+        closeQuietly(reader);
+    }
+
+    public static void closeQuietly(@Nullable final Writer writer) {
+        closeQuietly(writer);
     }
 
     public static void closeQuietly(@Nullable final Closeable closeable) {
