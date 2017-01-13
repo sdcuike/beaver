@@ -1,5 +1,6 @@
 package com.doctor.commons;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -9,7 +10,14 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.ReflectPermission;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.doctor.beaver.annotation.ThreadSafe;
@@ -21,10 +29,14 @@ import com.doctor.beaver.annotation.ThreadSafe;
  */
 @ThreadSafe
 public final class ReflectionUtils {
-    private static final ConcurrentHashMap<Class<?>, Field[]>        DeclaredFields_Cache  = new ConcurrentHashMap<>(256);
-    private static final ConcurrentHashMap<Class<?>, Method[]>       DeclaredMethods_Cache = new ConcurrentHashMap<>(256);
-    private static final ConcurrentHashMap<Class<?>, Constructor<?>> Constructor_Default   = new ConcurrentHashMap<>(256);
-    private static final ConcurrentHashMap<String, Constructor<?>>   Constructor_          = new ConcurrentHashMap<>(256);
+    private static final Map<Class<?>, Set<Field>>           DeclaredFields_Cache       = new ConcurrentHashMap<>();
+    private static final Map<Class<?>, Set<Method>>          DeclaredMethods_Cache      = new ConcurrentHashMap<>();
+    private static final Map<Class<?>, Constructor<?>>       Constructor_Default        = new ConcurrentHashMap<>();
+    private static final Map<String, Constructor<?>>         Constructor_               = new ConcurrentHashMap<>();
+    private static final Map<String, Set<Method>>            methodCache                = new ConcurrentHashMap<>();
+    private static final Map<Method, List<Class<?>>>         parameterTypeCache         = new ConcurrentHashMap<>();
+    private static final Map<Method, List<Annotation>>       methodAnnotationCache      = new ConcurrentHashMap<>();
+    private static final Map<Method, List<List<Annotation>>> methodParamAnnotationCache = new ConcurrentHashMap<>();
 
     public static <T> T newInstance(Class<?> clazz) throws ReflectiveOperationException {
         return newInstance(clazz, true, null, null);
@@ -105,12 +117,14 @@ public final class ReflectionUtils {
      * 为了避免底层方法安全检查和数组copy，缓存一份,提供性能
      * 
      * @param clazz
-     * @return {@code Field[]} 缓存的Field数组,无元素空数组
+     * @return {@code Set[]} 缓存的Field数组,无元素空数组
      */
-    public static Field[] getDeclaredFields(Class<?> clazz) {
-        Field[] fields = DeclaredFields_Cache.get(clazz);
+    public static Set<Field> getDeclaredFields(Class<?> clazz) {
+        Set<Field> fields = DeclaredFields_Cache.get(clazz);
+
         if (fields == null) {
-            fields = clazz.getDeclaredFields();
+            List<Field> list = Arrays.asList(clazz.getDeclaredFields());
+            fields = Collections.unmodifiableSet(new HashSet<>(list));
             DeclaredFields_Cache.put(clazz, fields);
         }
 
@@ -121,13 +135,13 @@ public final class ReflectionUtils {
      * 为了避免底层方法安全检查和数组copy，缓存一份,提供性能;java8的default方法不支持
      * 
      * @param clazz
-     * @return {@code Method[]} 缓存的Method数组，无元素空数组
+     * @return {@code Set<Method>} 缓存的Method数组，无元素空数组
      */
-    public static Method[] getDeclaredMethods(Class<?> clazz) {
-        Method[] methods = DeclaredMethods_Cache.get(clazz);
+    public static Set<Method> getDeclaredMethods(Class<?> clazz) {
+        Set<Method> methods = DeclaredMethods_Cache.get(clazz);
         if (methods == null) {
-            methods = clazz.getDeclaredMethods();
-            DeclaredMethods_Cache.put(clazz, methods);
+            List<Method> list = Arrays.asList(clazz.getDeclaredMethods());
+            DeclaredMethods_Cache.put(clazz, Collections.unmodifiableSet(new HashSet<>(list)));
         }
 
         return methods;
@@ -225,9 +239,125 @@ public final class ReflectionUtils {
         return result;
     }
 
+    /**
+     * 根据方法名寻找类的所有方法
+     * 
+     * @param classes
+     * @param name
+     * @return {@code Set<Method>}
+     */
+    public static Set<Method> findCandidateMethods(Class<?> clazz, String name) {
+        String cacheKey = clazz.getName() + "::" + name;
+
+        if (methodCache.containsKey(cacheKey)) {
+            return methodCache.get(cacheKey);
+        }
+
+        Set<Method> methods = new HashSet<>();
+        for (Method method : clazz.getMethods()) {
+            if (method.getName().equals(name)) {
+                methods.add(method);
+            }
+        }
+
+        methods = Collections.unmodifiableSet(methods);
+        methodCache.put(cacheKey, methods);
+
+        return methods;
+    }
+
+    /**
+     * @param method
+     * @return {@code List<Class<?>>}
+     */
+    public static List<Class<?>> getParameterTypes(Method method) {
+        if (parameterTypeCache.containsKey(method)) {
+            return parameterTypeCache.get(method);
+        }
+
+        List<Class<?>> types = Arrays.asList(method.getParameterTypes());
+        parameterTypeCache.put(method, types);
+
+        return types;
+    }
+
+    public static <T extends Annotation> List<T> getAnnotations(Method method, Class<T> type) {
+        return filterAnnotations(getAnnotations(method), type);
+    }
+
+    public static <T extends Annotation> List<T> filterAnnotations(Collection<Annotation> annotations, Class<T> type) {
+        List<T> result = new ArrayList<>();
+
+        for (Annotation annotation : annotations) {
+            if (type.isInstance(annotation)) {
+                result.add(type.cast(annotation));
+            }
+        }
+
+        return result;
+    }
+
+    public static List<Annotation> getAnnotations(Method method) {
+        if (methodAnnotationCache.containsKey(method)) {
+            return methodAnnotationCache.get(method);
+        }
+
+        List<Annotation> annotations = Collections.unmodifiableList(Arrays.asList(method.getAnnotations()));
+        methodAnnotationCache.put(method, annotations);
+
+        return annotations;
+    }
+
+    /**
+     * Returns the parameter {@link Annotation}s of the given type for the given
+     * {@link Method}.
+     * 
+     * @param <T> the {@link Annotation} type
+     * @param type the type
+     * @param method the {@link Method}
+     * @return the {@link Annotation}s
+     */
+    public static <T extends Annotation> List<List<T>> getParameterAnnotations(Method method, Class<T> type) {
+        List<List<T>> annotations = new ArrayList<>();
+
+        for (List<Annotation> paramAnnotations : getParameterAnnotations(method)) {
+            annotations.add(filterAnnotations(paramAnnotations, type));
+        }
+
+        return annotations;
+    }
+
+    /**
+     * Returns the parameter {@link Annotation}s for the given {@link Method}.
+     * 
+     * @param method the {@link Method}
+     * @return the {@link Annotation}s
+     */
+    public static List<List<Annotation>> getParameterAnnotations(Method method) {
+        if (methodParamAnnotationCache.containsKey(method)) {
+            return methodParamAnnotationCache.get(method);
+        }
+
+        List<List<Annotation>> annotations = new ArrayList<>();
+        for (Annotation[] paramAnnotations : method.getParameterAnnotations()) {
+            List<Annotation> listAnnotations = new ArrayList<>();
+            Collections.addAll(listAnnotations, paramAnnotations);
+            annotations.add(listAnnotations);
+        }
+
+        annotations = Collections.unmodifiableList(annotations);
+        methodParamAnnotationCache.put(method, annotations);
+        return annotations;
+    }
+
     public static void clearCache() {
         DeclaredFields_Cache.clear();
         DeclaredMethods_Cache.clear();
         Constructor_Default.clear();
+        Constructor_.clear();
+        methodCache.clear();
+        parameterTypeCache.clear();
+        methodAnnotationCache.clear();
+        methodParamAnnotationCache.clear();
     }
 }

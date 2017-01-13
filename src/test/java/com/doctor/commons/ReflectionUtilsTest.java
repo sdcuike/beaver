@@ -3,6 +3,7 @@ package com.doctor.commons;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.hamcrest.core.IsEqual;
 import org.junit.Assert;
@@ -62,6 +63,12 @@ public class ReflectionUtilsTest {
         Assert.assertThat(methodSignature, IsEqual.equalTo("void#setIndex:int"));
     }
 
+    @Test
+    public void test_() {
+        Set<Method> findCandidateMethods = ReflectionUtils.findCandidateMethods(TestClass.class, "getIndex");
+        System.out.println(findCandidateMethods);
+    }
+
     private static class TestClass {
         private int index = -1;
 
@@ -73,6 +80,10 @@ public class ReflectionUtilsTest {
         }
 
         public int getIndex() {
+            return index;
+        }
+
+        public int getIndex(short in) {
             return index;
         }
 
