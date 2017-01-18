@@ -36,7 +36,7 @@ public final class AESUtils {
 
     private static final String IvParameterSpec = "0102030405060708";
 
-    private static final int    KeySize128      = 128;
+    private static final int    KeySize128      = 128;                   //128、192、256
 
     /**
      * 生成Base64字符串密钥
@@ -48,7 +48,7 @@ public final class AESUtils {
         return generateBase64StringKey(KeySize128);
     }
 
-    private static String generateBase64StringKey(Integer keysize) throws NoSuchAlgorithmException {
+    public static String generateBase64StringKey(int keysize) throws NoSuchAlgorithmException {
         KeyGenerator keyGenerator = KeyGenerator.getInstance(KeyAlgorithm);
         keyGenerator.init(keysize);
         SecretKey secretKey = keyGenerator.generateKey();
