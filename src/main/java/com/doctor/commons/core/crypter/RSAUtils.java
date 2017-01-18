@@ -20,21 +20,18 @@
 package com.doctor.commons.core.crypter;
 
 import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
+import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
+import java.security.Signature;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 import com.doctor.beaver.annotation.Immutable;
 
@@ -45,10 +42,12 @@ import com.doctor.beaver.annotation.Immutable;
  */
 @Immutable
 public final class RSAUtils {
-    private static final String Key_Algorithm    = "RSA";
-    private static final int    KEY_SIZE         = 2048;                  //1024容易破解；
+    private static final String Key_Algorithm       = "RSA";
+    private static final int    KEY_SIZE            = 2048;                  //1024容易破解；
 
-    private static final String Cipher_Algorithm = "RSA/ECB/PKCS1Padding";
+    private static final String Cipher_Algorithm    = "RSA/ECB/PKCS1Padding";
+
+    private static final String Signature_Algorithm = "SHA512withRSA";
 
     /**
      * 生成公钥、私钥
@@ -60,6 +59,13 @@ public final class RSAUtils {
         return generateKeyPair(KEY_SIZE);
     }
 
+    /**
+     * 生成公钥、私钥
+     * 
+     * @param keySize key的大小
+     * @return {@code RsaKeyPair}
+     * @throws NoSuchAlgorithmException
+     */
     public static RsaKeyPair generateKeyPair(int keySize) throws NoSuchAlgorithmException {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(Key_Algorithm);
         keyPairGenerator.initialize(keySize);
@@ -71,7 +77,15 @@ public final class RSAUtils {
                 Base64Utils.encodeToString(privateKey.getEncoded()));
     }
 
-    public static String encryptToBase64StringByPrivateKey(String plainText, String base64StringPrivateKey) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+    /**
+     * 私钥加密
+     * 
+     * @param plainText 明文
+     * @param base64StringPrivateKey 私钥（以base64字符串形式使用）
+     * @return {@code String}
+     * @throws GeneralSecurityException
+     */
+    public static String encryptToBase64StringByPrivateKey(String plainText, String base64StringPrivateKey) throws GeneralSecurityException {
         PrivateKey privateKey = getPrivateKeyFromBase64String(base64StringPrivateKey);
         Cipher cipher = Cipher.getInstance(Cipher_Algorithm);
         cipher.init(Cipher.ENCRYPT_MODE, privateKey);
@@ -79,7 +93,15 @@ public final class RSAUtils {
         return Base64Utils.encodeToString(bytes);
     }
 
-    public static String decryptFromBase64StringByPublicKey(String encryptedBase64String, String base64StringPublicKey) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+    /**
+     * 公钥解密
+     * 
+     * @param encryptedBase64String
+     * @param base64StringPublicKey
+     * @return
+     * @throws GeneralSecurityException
+     */
+    public static String decryptFromBase64StringByPublicKey(String encryptedBase64String, String base64StringPublicKey) throws GeneralSecurityException {
         PublicKey publicKey = getPublicKeyFromBase64String(base64StringPublicKey);
         Cipher cipher = Cipher.getInstance(Cipher_Algorithm);
         cipher.init(Cipher.DECRYPT_MODE, publicKey);
@@ -88,7 +110,7 @@ public final class RSAUtils {
         return new String(bs, StandardCharsets.UTF_8);
     }
 
-    public static String encryptToBase64StringByPublicKey(String plainText, String base64StringPublicKey) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+    public static String encryptToBase64StringByPublicKey(String plainText, String base64StringPublicKey) throws GeneralSecurityException {
         PublicKey publicKey = getPublicKeyFromBase64String(base64StringPublicKey);
         Cipher cipher = Cipher.getInstance(Cipher_Algorithm);
         cipher.init(Cipher.ENCRYPT_MODE, publicKey);
@@ -96,7 +118,7 @@ public final class RSAUtils {
         return Base64Utils.encodeToString(bytes);
     }
 
-    public static String decryptFromBase64StringByPrivateKey(String encryptedBase64String, String base64StringPrivateKey) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+    public static String decryptFromBase64StringByPrivateKey(String encryptedBase64String, String base64StringPrivateKey) throws GeneralSecurityException {
         PrivateKey privateKey = getPrivateKeyFromBase64String(base64StringPrivateKey);
         Cipher cipher = Cipher.getInstance(Cipher_Algorithm);
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
@@ -105,18 +127,38 @@ public final class RSAUtils {
         return new String(bs, StandardCharsets.UTF_8);
     }
 
-    private static PublicKey getPublicKeyFromBase64String(String base64StringPublicKey) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public static String signToBase64String(String plainText, String base64StringPrivateKey) throws GeneralSecurityException {
+        Signature signature = getSignature();
+        signature.initSign(getPrivateKeyFromBase64String(base64StringPrivateKey));
+        signature.update(plainText.getBytes(StandardCharsets.UTF_8));
+        byte[] sign = signature.sign();
+        return Base64Utils.encodeToString(sign);
+    }
+
+    public static boolean verifyBase64SignedString(String plainText, String base64SignedString, String base64StringPublicKey) throws GeneralSecurityException {
+        Signature signature = getSignature();
+        signature.initVerify(getPublicKeyFromBase64String(base64StringPublicKey));
+        signature.update(plainText.getBytes(StandardCharsets.UTF_8));
+        byte[] bytes = Base64Utils.decode(base64SignedString);
+        return signature.verify(bytes);
+    }
+
+    private static PublicKey getPublicKeyFromBase64String(String base64StringPublicKey) throws GeneralSecurityException {
         KeyFactory keyFactory = getKeyFactory();
         return keyFactory.generatePublic(new X509EncodedKeySpec(Base64Utils.decode(base64StringPublicKey)));
     }
 
-    private static PrivateKey getPrivateKeyFromBase64String(String base64StringPrivateKey) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    private static PrivateKey getPrivateKeyFromBase64String(String base64StringPrivateKey) throws GeneralSecurityException {
         KeyFactory keyFactory = getKeyFactory();
         return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(Base64Utils.decode(base64StringPrivateKey)));
     }
 
     private static KeyFactory getKeyFactory() throws NoSuchAlgorithmException {
         return KeyFactory.getInstance(Key_Algorithm);
+    }
+
+    private static Signature getSignature() throws NoSuchAlgorithmException {
+        return Signature.getInstance(Signature_Algorithm);
     }
 
     public static final class RsaKeyPair {
