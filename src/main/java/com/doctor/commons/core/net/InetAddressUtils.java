@@ -19,6 +19,9 @@
  */
 package com.doctor.commons.core.net;
 
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.regex.Pattern;
 
 import com.doctor.beaver.annotation.Immutable;
@@ -85,6 +88,11 @@ public final class InetAddressUtils {
         return ip;
     }
 
+    public static long iPv4AddressToLong(Inet4Address iPv4Address) {
+        String hostAddress = iPv4Address.getHostAddress();
+        return iPv4AddressToLong(hostAddress);
+    }
+
     public static String longToIPv4Address(long iPv4) {
         String ip = ((iPv4 >>> 24) & 0xff) + "."
                 + ((iPv4 >>> 16) & 0xff) + "."
@@ -92,6 +100,11 @@ public final class InetAddressUtils {
                 + (iPv4 & 0xff);
 
         return ip;
+    }
+
+    public static InetAddress longToIPV4Address(long iPv4) throws UnknownHostException {
+        String address = longToIPv4Address(iPv4);
+        return InetAddress.getByName(address);
     }
 
     private InetAddressUtils() {
